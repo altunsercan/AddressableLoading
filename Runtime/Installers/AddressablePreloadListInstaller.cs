@@ -92,14 +92,21 @@ namespace AssetLoading.Installers
 
         private void BindGenericReference<T>(string key, AssetReferenceT<T> typedReference) where T:UnityEngine.Object
         {
-            Container.Bind<AssetLoader<T>>().WithId(key).AsCached().WithArguments(typedReference);
-            Container.Bind<AssetLoader>().To<GameObjectAssetLoader>().FromResolve(key).AsCached();     
+            Container.Bind<AssetLoader<T>>().WithId(key).AsCached().WithArguments(typedReference)
+                .OnInstantiated<AssetLoader<T>>(RegisterAssetLoader).NonLazy();
         }
 
         private void BindReference(string key, AssetReferenceGameObject gameObjectReference)
         {
-            Container.Bind<GameObjectAssetLoader>().WithId(key).AsCached().WithArguments(gameObjectReference);
-            Container.Bind<AssetLoader>().To<GameObjectAssetLoader>().FromResolve(key).AsCached();
+            Container.Bind<GameObjectAssetLoader>().WithId(key).AsCached().WithArguments(gameObjectReference)
+                .OnInstantiated<GameObjectAssetLoader>(RegisterAssetLoader).NonLazy();
+            
+        }
+
+        private void RegisterAssetLoader(InjectContext injectContext, AssetLoader assetLoader)
+        {
+            var preloader = injectContext.Container.Resolve<AddressablePreloader>();
+            preloader.AddAssetLoader(assetLoader);
         }
 
         #region Static Reflection

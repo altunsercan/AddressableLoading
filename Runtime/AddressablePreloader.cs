@@ -11,9 +11,9 @@ namespace AssetLoading
 
         public event EventHandler PreloadCompleted;
         
-        public AddressablePreloader(List<AssetLoader> loaderList)
+        public AddressablePreloader()
         {
-            this.loaderList = loaderList;
+            this.loaderList = new List<AssetLoader>();
         }
 
 
@@ -37,6 +37,11 @@ namespace AssetLoading
             {
                 PreloadCompleted?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        public void AddAssetLoader(AssetLoader loader)
+        {
+            loaderList.Add(loader);
         }
 
         private void OnAssetLoaded(object sender, EventArgs args)

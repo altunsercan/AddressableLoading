@@ -4,14 +4,20 @@ namespace AssetLoading.Installers
     using UnityEngine;
     using Zenject;
 
-    public class AddressablePreloadingKernelInstaller : Installer<AddressablePreloadingKernelInstaller>
-    {   
+    public class AddressablePreloadingKernelInstaller : Installer< AddressablePreloadingKernelInstaller>
+    {
+        [Inject] private Context context;
+        
         public override void InstallBindings()
         {
-            if (Container.HasBinding<AddressablePreloaderKernel>())
+            if (Container.HasBindingId<AddressablePreloaderKernel>(context))
             {
                 // there is already a preloading kernel. Skip
                 return;
+            }else if (Container.HasBinding<AddressablePreloader>())
+            {
+                // remove parent context's binding
+                Container.Unbind<AddressablePreloader>();
             }
 
             (Type rebindType, Type concreteKernelType) = GetKernelType();
@@ -21,13 +27,18 @@ namespace AssetLoading.Installers
                 return;
             }
 
-            Container.Bind<AddressablePreloader>().AsCached();
-
+            Container.Rebind<AddressablePreloader>().AsCached();
+            
             Container.Unbind(rebindType, rebindType);
             Container.Unbind(typeof(MonoKernel), rebindType);
-            Container.Bind(rebindType, typeof(MonoKernel), typeof(AddressablePreloaderKernel))
-                .To(concreteKernelType).FromNewComponentOn(_=>_.Container.DefaultParent.gameObject)
+            Container.Bind(rebindType, typeof(MonoKernel))
+                .To(concreteKernelType).FromNewComponentOn(_ =>
+                {
+                    var ctx = _.Container.Resolve<Context>();
+                    return ctx.gameObject;
+                })
                 .AsCached().NonLazy();
+            Container.Bind<MonoKernel>().WithId(context).FromResolve().AsCached();
         }
 
         private (Type rebindType, Type concreteKernelType) GetKernelType()
