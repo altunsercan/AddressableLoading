@@ -7,15 +7,15 @@ namespace AssetLoading.Installers
     using UnityEngine.AddressableAssets;
     using Zenject;
 
-    public abstract class BaseAddressablePreloadListInstaller : ScriptableObjectInstaller
+    public abstract class BaseAddressablePreloadListInstaller<T> : ScriptableObjectInstaller<T> where T : BaseAddressablePreloadListInstaller<T>
     {
         protected static readonly List<(string, AssetReference)> FillList = new List<(string, AssetReference)>();
     }
     
-    public abstract class AddressablePreloadListInstaller<T> : BaseAddressablePreloadListInstaller where T: AddressablePreloadListInstaller<T>
+    public abstract class AddressablePreloadListInstaller<T> : BaseAddressablePreloadListInstaller<T> where T: AddressablePreloadListInstaller<T>
     {
         public AddressablePreloadListInstaller()
-        {
+        {   
             if (_cachedReflectedAccessors == null)
             {
                 GenerateCachedAccessors();
@@ -35,11 +35,10 @@ namespace AssetLoading.Installers
                 AssetReference address = pair.Value?.Invoke(this);
                 referenceListToFill.Add((pair.Key, address));
             }
-            
         }
 
         public override sealed void InstallBindings()
-        {
+        {   
             // Update kernel
             AddressablePreloadingKernelInstaller.Install(Container);
             
@@ -66,7 +65,11 @@ namespace AssetLoading.Installers
             {
                 FillList.Clear();
             }
+            
+            InstallInternalBindings();
         }
+
+        protected virtual void InstallInternalBindings(){}
 
         private void BindReference(string key, AssetReference untypedReference)
         {
