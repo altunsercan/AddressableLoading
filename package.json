@@ -1,6 +1,6 @@
 {
     "name": "com.sercanaltun.addressableloading",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "displayName": "Addressable Loading",
     "description": "This project is a preloader setup for Addressables in Zenject/Extenject.",
     "unity": "2019.1",
