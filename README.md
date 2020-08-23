@@ -1,3 +1,5 @@
+> **After working on this repo, I have also worked on a generalized Async injection version which is currently a pull request in Extenject. You can check that out here https://github.com/svermeulen/Extenject/pull/155**
+
 This unity package is designed to be used with Extenject (Zenject) to install Addressable assets as preload dependencies for runnable Contexts (ProjectContext, SceneContext, GameObjectContext). This is not an one size fits all solution to using Addressables with Extenject, as the way addressables are managed may differ between different projects and architectures. 
 
 I am marely providing my personal approach after responding a lot of questions on the subject in different online chat rooms. This is not an officialy supported library. I will be working on a generalized Asyc support for Extenject that will cover working with addressables too. Hopefully will be in production ready quality to be merged into Extenject itself.
